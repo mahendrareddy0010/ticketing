@@ -1,19 +1,18 @@
-import axios from "axios";
+import axios from 'axios';
 
 export default ({ req }) => {
-  console.log("buildClient req.session: ", req.session);
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
+    // We are on the server
+
     return axios.create({
-      baseURL: "http://localhost:4000",
+      baseURL:
+        'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local',
       headers: req.headers,
-      withCredntials: true,
-      credentials: "include",
     });
   } else {
+    // We must be on the browser
     return axios.create({
-      baseURL: "http://localhost:4000",
-      withCredntials: true,
-      credentials: "include",
+      baseUrl: '/',
     });
   }
 };

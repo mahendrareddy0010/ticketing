@@ -7,7 +7,7 @@ const start = async () => {
     throw new Error("JWT_KEY : env variable is not defined");
   }
   try {
-    await mongoose.connect("mongodb+srv://mahendrareddyyarramreddy:simple123@cluster0.s2kukqx.mongodb.net/?retryWrites=true&w=majority");
+    await mongoose.connect("mongodb+srv://<username>:<password>@cluster0.s2kukqx.mongodb.net/?retryWrites=true&w=majority");
     console.log("Connected to DB");
   } catch (err) {
     console.log(err);

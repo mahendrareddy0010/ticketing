@@ -8,6 +8,9 @@ export default ({ url, method, body, onSuccess }) => {
     try {
       setErrors(null);
       const response = await axios[method](url, body, {
+        headers: {
+          "Content-Type": "application/json",
+        },
         withCredentials: true,
       });
 

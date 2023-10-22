@@ -3,22 +3,24 @@ import "express-async-errors";
 import { json } from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { errorHandler } from "@ymrticketing/common";
+import { NotFoundError } from "@ymrticketing/common";
 
 import { currentUserRouter } from "./routes/current-user";
 import { signinRouter } from "./routes/signin";
 import { signoutRouter } from "./routes/signout";
 import { signupRouter } from "./routes/signup";
-import { errorHandler } from "./middleware/error-handler";
-import { NotFoundError } from "./errors/not-found-error";
 
 const app = express();
 app.set("trust proxy", true);
 app.use(json());
 app.use(cookieParser());
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 app.use(currentUserRouter);
 app.use(signinRouter);

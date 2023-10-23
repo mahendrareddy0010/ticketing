@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 
 declare global {
-  var signin: () => string[];
+  var signin: (payload?: { id: string; email: string }) => string[];
 }
 
 let mongo: MongoMemoryServer;
@@ -30,13 +30,12 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-global.signin = () => {
-  // Build a JWT payload, {id, email}
-  const payload = {
+global.signin = (
+  payload = {
     id: "ishhaklsf",
     email: "test@test.com",
-  };
-
+  }
+) => {
   // Create the JWT
 
   const access_token = jwt.sign(payload, process.env.JWT_KEY!);

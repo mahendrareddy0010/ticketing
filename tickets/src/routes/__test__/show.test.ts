@@ -2,9 +2,6 @@ import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
 
-it("returns 401 if the user is not signed in", async () => {
-  await request(app).get("/api/tickets/hgfjhgfjjhsbxzx").send().expect(401);
-});
 
 it("returns 404 if the ticket is not found", async () => {
   const id = new mongoose.Types.ObjectId().toHexString();

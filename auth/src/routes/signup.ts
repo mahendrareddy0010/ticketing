@@ -41,6 +41,7 @@ router.post(
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });
+    console.log(userJwt);
     res.status(201).send(user);
   }
 );

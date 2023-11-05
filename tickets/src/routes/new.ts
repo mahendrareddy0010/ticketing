@@ -2,6 +2,8 @@ import { requireAuth, validateRequest } from "@ymrticketing/common";
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import { Ticket } from "../models/ticket";
+import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -19,7 +21,19 @@ router.post(
     const { title, price } = req.body;
 
     const ticket = Ticket.build({ title, price, userId: req.currentUser!.id });
+
     await ticket.save();
+    const publisher = new TicketCreatedPublisher(natsWrapper.client);
+    try {
+      await publisher.publish({
+        id: ticket.id,
+        title: ticket.title,
+        price: ticket.price,
+        userId: ticket.userId,
+      });
+    } catch (err) {
+      console.log(err);
+    }
 
     res.status(201).send(ticket);
   }

@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
+import { natsWrapper } from "../../nats-wrapper";
 
 const createTicket = (payload: { id: string; email: string }) => {
   return request(app)
@@ -109,4 +110,19 @@ it("returns 200 if ticket owner update with correct fields", async () => {
     .expect(200);
   expect(body.title).toEqual("jjgdfjk");
   expect(body.price).toEqual("10");
+});
+
+it("publishes an event", async () => {
+  const response = await createTicket(user1);
+  const id = response.body.id;
+  await request(app)
+    .put(`/api/tickets/${id}`)
+    .set("Cookie", global.signin(user1))
+    .send({
+      title: "jjgdfjk",
+      price: 10,
+    })
+    .expect(200);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });

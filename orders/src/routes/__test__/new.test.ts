@@ -17,6 +17,7 @@ it("invalid ticketId", async () => {
 
 it("ticketId is already reserved", async () => {
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "Topology",
     price: 10,
   });
@@ -38,6 +39,7 @@ it("ticketId is already reserved", async () => {
 
 it("Order Successful", async () => {
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "Topology",
     price: 10,
   });
@@ -50,17 +52,18 @@ it("Order Successful", async () => {
   expect(response.status).toEqual(201);
 });
 
-// it("publishes an event", async () => {
-//   const ticket = Ticket.build({
-//     title: "Topology",
-//     price: 10,
-//   });
-//   await ticket.save();
-//   await request(app)
-//     .post("/api/orders")
-//     .set("Cookie", global.signin())
-//     .send({ ticketId: ticket.id })
-//     .expect(201);
+it("publishes an order-created event", async () => {
+  const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: "Topology",
+    price: 10,
+  });
+  await ticket.save();
+  await request(app)
+    .post("/api/orders")
+    .set("Cookie", global.signin())
+    .send({ ticketId: ticket.id })
+    .expect(201);
 
-//   expect(natsWrapper.client.publish).toHaveBeenCalled();
-// });
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+});

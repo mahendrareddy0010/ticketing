@@ -1,12 +1,11 @@
 import request from "supertest";
 import { app } from "../../app";
 import { Ticket } from "../../models/ticket";
-import { Order, OrderStatus } from "../../models/order";
-import { natsWrapper } from "../../nats-wrapper";
 import mongoose from "mongoose";
 
 it("unauthorized user", async () => {
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "Topology",
     price: 10,
   });
@@ -27,6 +26,7 @@ it("unauthorized user", async () => {
 
 it("fetches orders for a particular user", async () => {
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "Topology",
     price: 10,
   });

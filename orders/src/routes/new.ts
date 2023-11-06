@@ -10,6 +10,8 @@ import {
 import { body } from "express-validator";
 import { Ticket } from "../models/ticket";
 import { Order } from "../models/order";
+import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -47,6 +49,23 @@ router.post(
       ticket: ticket,
     });
     await order.save();
+
+    const publisher = new OrderCreatedPublisher(natsWrapper.client);
+    try {
+      await publisher.publish({
+        id: order.id,
+        version: order.version,
+        status: OrderStatus.Created,
+        userId: order.userId,
+        expiresAt: order.expiresAt.toISOString(),
+        ticket: {
+          id: ticket.id,
+          price: ticket.price,
+        },
+      });
+    } catch (err) {
+      console.log("unable to publish Order created event : ", err);
+    }
 
     res.status(201).send(order);
   }

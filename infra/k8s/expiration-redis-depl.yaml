@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expirations-redis-db-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expirations-redis-db
+  template:
+    metadata:
+      labels:
+        app: expirations-redis-db
+    spec:
+      containers:
+        - name: expirations-redis-db
+          image: mahendrareddy0010/expirations-redis-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expirations-redis-db-srv
+spec:
+  selector:
+    app: expirations-redis-db
+  ports:
+    - name: db
+      protocol: TCP
+      port: 6379
+      targetPort: 6379

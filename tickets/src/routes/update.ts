@@ -6,6 +6,7 @@ import {
   validateRequest,
   NotAuthorizedError,
   NotFoundError,
+  BadRequestError,
 } from "@ymrticketing/common";
 import { natsWrapper } from "../nats-wrapper";
 import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
@@ -33,6 +34,10 @@ router.put(
 
     if (ticket.userId !== currentUserId) {
       throw new NotAuthorizedError();
+    }
+
+    if (ticket.orderId) {
+      throw new BadRequestError("Ticket is reserved");
     }
 
     ticket.set({ title, price });

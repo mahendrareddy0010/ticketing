@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { randomBytes } from "crypto";
 import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";
+import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";
 require("dotenv").config();
 
 const start = async () => {
@@ -26,6 +28,9 @@ const start = async () => {
     });
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
+
+    new OrderCreatedListener(natsWrapper.client).listen();
+    new OrderCancelledListener(natsWrapper.client).listen();
 
     await mongoose.connect(process.env.TICKETS_SRV_MONGO_URI);
     console.log("Connected to DB");

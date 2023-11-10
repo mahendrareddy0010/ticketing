@@ -9,12 +9,11 @@ interface Payload {
 
 const expirationQueue = new Queue<Payload>("order:expiration", {
   redis: {
-    port: 6379,
-    host: "127.0.0.1",
+    port: Number(process.env.REDIS_PORT),
+    host: process.env.REDIS_HOST,
   },
 });
 expirationQueue.process(async (job) => {
-  console.log(job.data);
   await new ExpirationCompletePublisher(natsWrapper.client).publish({
     orderId: job.data.orderId,
   });

@@ -6,16 +6,22 @@ import {
 } from "@ymrticketing/common";
 import { Message } from "node-nats-streaming";
 import { queueGroupName } from "./queue-group-name";
-import { expirationQueue } from "../../queues/expiration-queue";
+import { Order } from "../../models/order";
 
 export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
   readonly subject = Subjects.OrderCreated;
   queueGroupName = queueGroupName;
   async onMessage(data: OrderCreatedEvent["data"], msg: Message) {
-    const delay = new Date(data.expiresAt).getTime() - new Date().getTime();
+    const order = Order.build({
+      id: data.id,
+      version: data.version,
+      userId: data.userId,
+      price: data.ticket.price,
+      status: data.status,
+    });
 
-    await expirationQueue.add({ orderId: data.id }, { delay: delay });
-
+    await order.save();
+    
     msg.ack();
   }
 }

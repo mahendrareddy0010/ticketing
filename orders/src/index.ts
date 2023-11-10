@@ -8,6 +8,7 @@ import { ExpirationCompleteListener } from "./events/listeners/expiration-comple
 require("dotenv").config();
 
 const start = async () => {
+  console.log("Satrting the orders service....");
   if (!process.env.JWT_KEY) {
     throw new Error("JWT_KEY : env variable is not defined");
   }
